@@ -1,18 +1,35 @@
+using System;
+using System.ComponentModel;
 using Xunit;
 
 namespace LogAnalyzer.UniteTests
 {
     public class LogAnalyzerTests
     {
+        private LogAnalyzerLib.LogAnalyzer MakeAnalyzer()
+        {
+            return new LogAnalyzerLib.LogAnalyzer();
+        }
+        [Category("Быстрые тесты")]
         [Fact]
         public void IsValidFileName_BadExtension_ReturnsFalse()
         {
-            //Arrange
-            LogAnalyzerLib.LogAnalyzer analyzer = new LogAnalyzerLib.LogAnalyzer();
-            //Act
+            LogAnalyzerLib.LogAnalyzer analyzer = MakeAnalyzer();
+
             bool result = analyzer.IsValidLogFileName("WrongName.foo");
-            //Assert
+            
             Assert.False(result);
+        }
+
+        [Category("Быстрые тесты")]
+        [Fact]
+        public void IsValidFileName_EmptyFileName_Throws()
+        {
+            LogAnalyzerLib.LogAnalyzer analyzer = MakeAnalyzer();
+
+            var ex = Assert.Throws<ArgumentException>(() => analyzer.IsValidLogFileName(string.Empty));
+
+            Assert.Contains("Имя файла должно быть задано.",ex.Message);
         }
 
         [Theory]
@@ -20,11 +37,10 @@ namespace LogAnalyzer.UniteTests
         [InlineData("WrongName.SLF")]
         public void IsValidLogFileName_ValidExtensions_ReturnsTrue(string data)
         {
-            //Arrange
-            LogAnalyzerLib.LogAnalyzer analyzer = new LogAnalyzerLib.LogAnalyzer();
-            //Act
+            LogAnalyzerLib.LogAnalyzer analyzer = MakeAnalyzer();
+
             bool result =analyzer.IsValidLogFileName(data);
-            //Assert
+
             Assert.True(result);
         }
     }
