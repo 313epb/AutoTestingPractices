@@ -1,15 +1,71 @@
 using System;
-using System.ComponentModel;
+using LogAnalyzerLib;
+using LogAnalyzerLib.Interfaces;
 using Xunit;
 
-namespace LogAnalyzer.UniteTests
+namespace LogAnalyzer.UnitTests
 {
     public class LogAnalyzerTests
     {
         private LogAnalyzerLib.LogAnalyzer MakeAnalyzer()
         {
+
             return new LogAnalyzerLib.LogAnalyzer();
         }
+
+        #region Заглушки
+
+        internal class FakeExtensionManager:IExtensionManager
+        {
+            public Exception WillThrow = null;
+            public bool WillBeValid = false;
+
+            public bool IsValid(string fileName)
+            {
+                if (WillThrow != null)
+                {
+                    throw WillThrow;
+                }
+                return WillBeValid;
+            }
+        }
+
+        [Fact]
+        public void IsValidLogFileName_NameSupportedExtension_ReturnsTrue()
+        {
+            FakeExtensionManager fakeExtension= new FakeExtensionManager();
+            fakeExtension.WillBeValid = true;
+            LogAnalyzerLib.LogAnalyzer log= new LogAnalyzerLib.LogAnalyzer(fakeExtension);
+
+            bool result = log.IsValidLogFileName("short.exe");
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void IsValidLogFileName_ExtManagerThrowsException_ReturnsFalse()
+        {
+            FakeExtensionManager fakeExtension = new FakeExtensionManager();
+            fakeExtension.WillThrow= new Exception("Тестовое исключение");
+            LogAnalyzerLib.LogAnalyzer log = new LogAnalyzerLib.LogAnalyzer(fakeExtension);
+
+            bool result = false;
+
+            try
+            {
+                result=log.IsValidLogFileName("short.exe");
+            }
+            catch (Exception e)
+            {
+                result = false;
+            }
+
+            Assert.False(result);
+        }
+
+        
+
+        #endregion
 
         #region Тесты возвращаемых значений
 
