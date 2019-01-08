@@ -10,7 +10,9 @@ namespace LogAnalyzer.UniteTests
         {
             return new LogAnalyzerLib.LogAnalyzer();
         }
-        [Category("Быстрые тесты")]
+
+        #region Тесты возвращаемых значений
+
         [Fact]
         public void IsValidFileName_BadExtension_ReturnsFalse()
         {
@@ -21,7 +23,6 @@ namespace LogAnalyzer.UniteTests
             Assert.False(result);
         }
 
-        [Category("Быстрые тесты")]
         [Fact]
         public void IsValidFileName_EmptyFileName_Throws()
         {
@@ -43,5 +44,23 @@ namespace LogAnalyzer.UniteTests
 
             Assert.True(result);
         }
+
+        #endregion
+
+        #region Тесты состояния
+
+        [Theory]
+        [InlineData(false,"badname.foo")]
+        [InlineData(true,"goodname.slf")]
+        public void IsIsValidLogFileName_WhenCalled_ChangesWasLastFileNameValid(bool expected, string fileName)
+        {
+            LogAnalyzerLib.LogAnalyzer analyzer = MakeAnalyzer();
+
+            analyzer.IsValidLogFileName(fileName);
+
+            Assert.Equal(expected,analyzer.WasLastFileNameValid);
+        }
+
+        #endregion
     }
 }
