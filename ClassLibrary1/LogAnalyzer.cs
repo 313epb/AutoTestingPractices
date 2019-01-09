@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using LogAnalyzerLib.Interfaces;
+[assembly: InternalsVisibleToAttribute("LogAnalyzer.UnitTests")]
 
 namespace LogAnalyzerLib
 {
@@ -12,7 +13,7 @@ namespace LogAnalyzerLib
 
         public bool WasLastFileNameValid { get; set; }
 
-        public LogAnalyzer(IExtensionManager extensionManager)
+        internal LogAnalyzer(IExtensionManager extensionManager)
         {
             _extensionManager = extensionManager;
         }
