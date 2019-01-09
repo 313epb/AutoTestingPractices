@@ -7,15 +7,25 @@ namespace LogAnalyzer.UnitTests
 {
     public class LogAnalyzerTests
     {
+        #region Фабрики
+
         private LogAnalyzerLib.LogAnalyzer MakeAnalyzer()
         {
 
             return new LogAnalyzerLib.LogAnalyzer();
         }
 
+        private LogAnalyzerLib.LogAnalyzer MakeAnalyzer(IExtensionManager extensionManager)
+        {
+
+            return new LogAnalyzerLib.LogAnalyzer(extensionManager);
+        }
+
+        #endregion
+
         #region Заглушки
 
-        internal class FakeExtensionManager:IExtensionManager
+        internal class FakeExtensionManager : IExtensionManager
         {
             public Exception WillThrow = null;
             public bool WillBeValid = false;
@@ -30,24 +40,31 @@ namespace LogAnalyzer.UnitTests
             }
         }
 
-        [Fact]
-        public void IsValidLogFileName_NameSupportedExtension_ReturnsTrue()
+        private FakeExtensionManager makeManager()
         {
-            FakeExtensionManager fakeExtension= new FakeExtensionManager();
+            return  new FakeExtensionManager();
+        }
+
+        #region Внедрение заглушки через конструктор
+
+        [Fact]
+        public void IsValidLogFileName_NameSupportedExtension_ReturnsFalse()
+        {
+            FakeExtensionManager fakeExtension= makeManager();
             fakeExtension.WillBeValid = true;
-            LogAnalyzerLib.LogAnalyzer log= new LogAnalyzerLib.LogAnalyzer(fakeExtension);
+            LogAnalyzerLib.LogAnalyzer log= MakeAnalyzer(fakeExtension);
 
             bool result = log.IsValidLogFileName("short.exe");
 
-            Assert.True(result);
+            Assert.False(result);
         }
 
         [Fact]
         public void IsValidLogFileName_ExtManagerThrowsException_ReturnsFalse()
         {
-            FakeExtensionManager fakeExtension = new FakeExtensionManager();
+            FakeExtensionManager fakeExtension = makeManager();
             fakeExtension.WillThrow= new Exception("Тестовое исключение");
-            LogAnalyzerLib.LogAnalyzer log = new LogAnalyzerLib.LogAnalyzer(fakeExtension);
+            LogAnalyzerLib.LogAnalyzer log = MakeAnalyzer(fakeExtension);
 
             bool result = false;
 
@@ -63,7 +80,24 @@ namespace LogAnalyzer.UnitTests
             Assert.False(result);
         }
 
-        
+        #endregion
+
+        #region Внедрение заглушки через свойство
+
+        [Fact]
+        public void IsValidLogFileName_SupportedExtension_ReturnsTrue()
+        {
+            FakeExtensionManager mgr = makeManager();
+            mgr.WillBeValid = true;
+            LogAnalyzerLib.LogAnalyzer log = MakeAnalyzer();
+            log.ExtensionManager = mgr;
+
+            bool result = log.IsValidLogFileName("test.slf");
+
+            Assert.True(result);
+        }
+
+        #endregion
 
         #endregion
 

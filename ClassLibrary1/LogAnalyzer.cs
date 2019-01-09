@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Reflection;
 using LogAnalyzerLib.Interfaces;
 
 namespace LogAnalyzerLib
 {
     public class LogAnalyzer
     {
-        private readonly IExtensionManager _extensionManager;
+        private IExtensionManager _extensionManager;
+        
+        public IExtensionManager ExtensionManager{get => _extensionManager; set => _extensionManager = value;}
+
         public bool WasLastFileNameValid { get; set; }
 
         public LogAnalyzer(IExtensionManager extensionManager)
@@ -15,14 +19,16 @@ namespace LogAnalyzerLib
 
         public LogAnalyzer()
         {
-
+            ExtensionManagerFactory factory= new ExtensionManagerFactory();
+            _extensionManager = factory.Create();
         }
 
         public bool IsValidLogFileName(string filename)
         {
             WasLastFileNameValid = false;
 
-            if (_extensionManager!=null)return _extensionManager.IsValid(filename);
+            //строка для тестирования внедрения зависимостей, дабы не переписывать класс. 
+            //if (_extensionManager != null) return _extensionManager.IsValid(filename);
 
             if (string.IsNullOrEmpty(filename))
             {
@@ -36,6 +42,7 @@ namespace LogAnalyzerLib
 
             WasLastFileNameValid = true;
             return true;
+
         }
     }
 }
