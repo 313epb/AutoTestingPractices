@@ -27,8 +27,8 @@ namespace LogAnalyzer.UnitTests
 
         internal class FakeExtensionManager : IExtensionManager
         {
-            public Exception WillThrow = null;
-            public bool WillBeValid = false;
+            public Exception WillThrow;
+            public bool WillBeValid ;
 
             public bool IsValid(string fileName)
             {
@@ -40,7 +40,7 @@ namespace LogAnalyzer.UnitTests
             }
         }
 
-        private FakeExtensionManager makeManager()
+        private FakeExtensionManager MakeManager()
         {
             return  new FakeExtensionManager();
         }
@@ -50,7 +50,7 @@ namespace LogAnalyzer.UnitTests
         [Fact]
         public void IsValidLogFileName_NameSupportedExtension_ReturnsFalse()
         {
-            FakeExtensionManager fakeExtension= makeManager();
+            FakeExtensionManager fakeExtension= MakeManager();
             fakeExtension.WillBeValid = true;
             LogAnalyzerLib.LogAnalyzer log= MakeAnalyzer(fakeExtension);
 
@@ -62,17 +62,17 @@ namespace LogAnalyzer.UnitTests
         [Fact]
         public void IsValidLogFileName_ExtManagerThrowsException_ReturnsFalse()
         {
-            FakeExtensionManager fakeExtension = makeManager();
+            FakeExtensionManager fakeExtension = MakeManager();
             fakeExtension.WillThrow= new Exception("Тестовое исключение");
             LogAnalyzerLib.LogAnalyzer log = MakeAnalyzer(fakeExtension);
 
-            bool result = false;
+            bool result;
 
             try
             {
                 result=log.IsValidLogFileName("short.exe");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = false;
             }
@@ -87,7 +87,7 @@ namespace LogAnalyzer.UnitTests
         [Fact]
         public void IsValidLogFileName_SupportedExtension_ReturnsTrue()
         {
-            FakeExtensionManager mgr = makeManager();
+            FakeExtensionManager mgr = MakeManager();
             mgr.WillBeValid = true;
             LogAnalyzerLib.LogAnalyzer log = MakeAnalyzer();
             log.ExtensionManager = mgr;
@@ -95,6 +95,64 @@ namespace LogAnalyzer.UnitTests
             bool result = log.IsValidLogFileName("test.slf");
 
             Assert.True(result);
+        }
+
+        #endregion
+
+        #region Подделка фабричного метода в наследуемом классе
+
+        internal class TestableLogAnalyzer:LogAnalyzerUsingFactoryMethod
+        {
+            public IExtensionManager _extensionManager;
+
+            public TestableLogAnalyzer(IExtensionManager extensionManager)
+            {
+                _extensionManager = extensionManager;
+            }
+
+            protected override IExtensionManager GetManager()
+            {
+                return _extensionManager;
+            }
+        }
+
+        [Fact]
+        public void IsValidLogFileName_UnsupportedExtension_ReturnsFalse()
+        {
+            FakeExtensionManager mgr = MakeManager();
+            mgr.WillBeValid = false;
+
+            TestableLogAnalyzer log=new TestableLogAnalyzer(mgr);
+
+            bool result = log.IsValidLogFileName("factory.ght");
+
+            Assert.False(result);
+        }
+
+        #endregion
+
+        #region Возвращение поддельного результата в тесте
+
+        internal class TestableLogAnalyzerResult : LogAnalyzerUsingFactoryMethod
+        {
+            public bool IsSupported;
+
+            protected override bool IsValid(string fileName)
+            {
+                return IsSupported;
+            }
+        }
+
+        [Fact]
+        public void IsValidLogFileName_FakeLogResult_AlwaysReturnsTrue()
+        {
+            TestableLogAnalyzerResult log= new TestableLogAnalyzerResult();
+            log.IsSupported = true;
+
+            bool result = log.IsValidLogFileName("context.amr");
+
+            Assert.True(result);
+
         }
 
         #endregion
@@ -153,4 +211,6 @@ namespace LogAnalyzer.UnitTests
 
         #endregion
     }
+
+    
 }

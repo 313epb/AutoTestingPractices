@@ -19,7 +19,11 @@ namespace LogAnalyzerLib
 
         public LogAnalyzer()
         {
-            ExtensionManagerFactory factory= new ExtensionManagerFactory();
+            
+        }
+
+        public LogAnalyzer(ExtensionManagerFactory factory)
+        {
             _extensionManager = factory.Create();
         }
 
