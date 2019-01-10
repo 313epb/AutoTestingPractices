@@ -7,6 +7,7 @@ namespace LogAnalyzerLib
 {
     public class LogAnalyzer
     {
+        private readonly IWebService _webService;
         private IExtensionManager _extensionManager;
         
         public IExtensionManager ExtensionManager{get => _extensionManager; set => _extensionManager = value;}
@@ -22,6 +23,21 @@ namespace LogAnalyzerLib
         {
             
         }
+
+
+        public LogAnalyzer(IWebService webService)
+        {
+            _webService = webService;
+        }
+
+        public void Analyze(string fileName)
+        {
+            if (fileName.Length < 8)
+            {
+                _webService.LogError($"Слишком короткое имя файла - {fileName}");
+            }
+        }
+
 
         public LogAnalyzer(ExtensionManagerFactory factory)
         {

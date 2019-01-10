@@ -15,6 +15,11 @@ namespace LogAnalyzer.UnitTests
             return new LogAnalyzerLib.LogAnalyzer();
         }
 
+        private LogAnalyzerLib.LogAnalyzer MakeAnalyzer(IWebService webService)
+        {
+            return new LogAnalyzerLib.LogAnalyzer(webService);
+        }
+
         private LogAnalyzerLib.LogAnalyzer MakeAnalyzer(IExtensionManager extensionManager)
         {
 
@@ -153,6 +158,20 @@ namespace LogAnalyzer.UnitTests
 
             Assert.True(result);
 
+        }
+
+        #endregion
+
+        #region Тестирование через mock(подставной объект)  
+
+        [Fact]
+        public void Analyze_TooShortFileName_CallsWebService()
+        {
+            FakeWebService mockService = new FakeWebService();
+            LogAnalyzerLib.LogAnalyzer log = MakeAnalyzer(mockService);
+            string tooShortFileName ="abc.ext";
+            log.Analyze(tooShortFileName);
+            Assert.Contains("слишком короткое имя фаила",mockService.LastError);
         }
 
         #endregion
