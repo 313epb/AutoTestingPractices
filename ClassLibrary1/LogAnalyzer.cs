@@ -36,6 +36,7 @@ namespace LogAnalyzerLib
             {
                 _webService.LogError($"Слишком короткое имя файла - {fileName}");
             }
+            
         }
 
 

@@ -170,7 +170,9 @@ namespace LogAnalyzer.UnitTests
             FakeWebService mockService = new FakeWebService();
             LogAnalyzerLib.LogAnalyzer log = MakeAnalyzer(mockService);
             string tooShortFileName ="abc.ext";
+
             log.Analyze(tooShortFileName);
+
             Assert.Contains("слишком короткое имя фаила",mockService.LastError);
         }
 
