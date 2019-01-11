@@ -1,6 +1,6 @@
 ﻿using LogAnalyzerLib.Interfaces;
 
-namespace LogAnalyzerLib
+namespace LogAnalyzerLib.FakeClasses
 {
     public class FakeEmailService:IEmailService
     {

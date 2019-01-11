@@ -1,6 +1,9 @@
 using System;
 using LogAnalyzerLib;
+using LogAnalyzerLib.Factories;
+using LogAnalyzerLib.FakeClasses;
 using LogAnalyzerLib.Interfaces;
+using NSubstitute;
 using Xunit;
 
 namespace LogAnalyzer.UnitTests
@@ -24,6 +27,11 @@ namespace LogAnalyzer.UnitTests
         {
 
             return new LogAnalyzerLib.LogAnalyzer(extensionManager);
+        }
+
+        private LogAnalyzerLib.LogAnalyzer MakeAnalyzer(ILogger logger)
+        {
+            return new LogAnalyzerLib.LogAnalyzer(logger);
         }
 
         #endregion
@@ -173,7 +181,7 @@ namespace LogAnalyzer.UnitTests
 
             log.Analyze(tooShortFileName);
 
-            Assert.Contains("слишком короткое имя фаила",mockService.LastError);
+            Assert.Contains("слишком короткое", mockService.LastError);
         }
 
         #endregion
@@ -212,6 +220,34 @@ namespace LogAnalyzer.UnitTests
             bool result =analyzer.IsValidLogFileName(data);
 
             Assert.True(result);
+        }
+
+        #endregion
+
+        #region Mock и NSub
+
+        [Fact]
+        public void Analyze_TooShortFileName_CallLogger()
+        {
+            FakeLogger logger = new FakeLogger();
+            LogAnalyzerLib.LogAnalyzer analyzer = MakeAnalyzer(logger);
+            analyzer.MinNameLength = 6;
+
+            analyzer.Analyze("a.sys");
+
+            Assert.Contains("слишком короткое", logger.LastError);
+        }
+
+        [Fact]
+        public void Analyze_TooShortFileName_CallLoggerNSub()
+        {
+            var logger = Substitute.For<IWebService>();
+            LogAnalyzerLib.LogAnalyzer analyzer = MakeAnalyzer(logger);
+            analyzer.MinNameLength = 6;
+
+            analyzer.Analyze("a.sys");
+
+            logger.Received().LogError("слишком короткое имя файла - a.sys"); //сделал иначе чем в книге, возможно автор ошибся. в оригинале -подставка используется для ILogger 
         }
 
         #endregion

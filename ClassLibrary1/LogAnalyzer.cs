@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using LogAnalyzerLib.Factories;
 using LogAnalyzerLib.Interfaces;
 [assembly: InternalsVisibleToAttribute("LogAnalyzer.UnitTests")]
 
@@ -7,8 +8,10 @@ namespace LogAnalyzerLib
 {
     public class LogAnalyzer
     {
+        private readonly ILogger _logger;
         private readonly IWebService _webService;
         private IExtensionManager _extensionManager;
+        public int MinNameLength=8;
         
         public IExtensionManager ExtensionManager{get => _extensionManager; set => _extensionManager = value;}
 
@@ -17,11 +20,17 @@ namespace LogAnalyzerLib
         internal LogAnalyzer(IExtensionManager extensionManager)
         {
             _extensionManager = extensionManager;
+
         }
 
         public LogAnalyzer()
         {
             
+        }
+
+        public LogAnalyzer(ILogger logger)
+        {
+            _logger = logger;
         }
 
 
@@ -32,9 +41,17 @@ namespace LogAnalyzerLib
 
         public void Analyze(string fileName)
         {
-            if (fileName.Length < 8)
+            if (fileName.Length < MinNameLength)
             {
-                _webService.LogError($"Слишком короткое имя файла - {fileName}");
+                if (_webService!=null)
+                {
+                    _webService.LogError($"слишком короткое имя файла - {fileName}");
+                }
+
+                if (_logger != null) 
+                {
+                    _logger.LastError= $"слишком короткое имя файла - {fileName}";
+                }
             }
             
         }

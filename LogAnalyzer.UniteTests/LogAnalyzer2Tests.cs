@@ -1,5 +1,6 @@
 ﻿using System;
 using LogAnalyzerLib;
+using LogAnalyzerLib.FakeClasses;
 using Xunit;
 
 namespace LogAnalyzer.UnitTests
