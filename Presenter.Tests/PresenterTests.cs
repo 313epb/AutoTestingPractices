@@ -25,9 +25,10 @@ namespace Presenter.UnitTests
             var stubView = Substitute.For<IView>();
             var mockLogger = Substitute.For<ILogger>();
             PresenterLib.Presenter p = new PresenterLib.Presenter(stubView, mockLogger);
+
             stubView.ErrorOccured +=Raise.Event<Action<string>>("fake error");
-            mockLogger.Received()
-                .LogError(Arg.Is<string>(s => s.Contains("fake error")));
+
+            mockLogger.Received().LogError(Arg.Is<string>(s => s.Contains("fake error")));
         }
 
         [Fact]
