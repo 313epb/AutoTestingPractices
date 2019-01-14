@@ -16,5 +16,13 @@ namespace LogAnalyzerLib.FakeClasses
                 throw ToThrow;
             }
         }
+
+        public string MessageToWebService { get; set; }
+
+        public void Write(string message)
+        {
+            MessageToWebService = message;
+        }
+
     }
 }
