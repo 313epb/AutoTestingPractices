@@ -267,7 +267,6 @@ namespace LogAnalyzer.UnitTests
         }
 
         #endregion
-    }
 
-    
+    }
 }
