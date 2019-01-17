@@ -4,7 +4,7 @@
     {
         public bool IsConfigured(string configName)
         {
-            LoggingFacility.Log($"проверяется {configName}");
+            //LoggingFacility.Log($"проверяется {configName}");
             return true;
         }
     }

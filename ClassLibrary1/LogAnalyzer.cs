@@ -53,7 +53,7 @@ namespace LogAnalyzerLib
                     _logger.LastError= $"слишком короткое имя файла - {fileName}";
                 }
 
-                LoggingFacility.Log($"Слишком короткое имя файла - {fileName}") ;
+                //LoggingFacility.Log($"Слишком короткое имя файла - {fileName}") ;
             }
             
         }
